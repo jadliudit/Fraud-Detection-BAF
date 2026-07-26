@@ -96,16 +96,16 @@ This is a **modelling** project on a static, publicly released dataset. It does 
 
 ## Repository structure
 
-Fraud-Detection-BAF/
-├── data/ # BAF CSVs from Kaggle (gitignored, not committed)
-├── notebooks/
-│ ├── 01_eda.ipynb # Exploratory data analysis
-│ └── 02_preprocessing.ipynb # Data preprocessing (in progress)
-├── src/ # reusable preprocessing / modelling functions
-├── app/ # FastAPI endpoint + Streamlit demo (planned)
-├── requirements.txt
-├── .gitignore
-└── README.md
+    Fraud-Detection-BAF/
+    ├── data/                       # BAF CSVs from Kaggle (gitignored, not committed)
+    ├── notebooks/
+    │   ├── 01_eda.ipynb            # Exploratory data analysis
+    │   └── 02_preprocessing.ipynb  # Data preprocessing (in progress)
+    ├── src/                        # reusable preprocessing / modelling functions
+    ├── app/                        # FastAPI endpoint + Streamlit demo (planned)
+    ├── requirements.txt
+    ├── .gitignore
+    └── README.md
 
 
 ## Setup
