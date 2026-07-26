@@ -2,9 +2,9 @@
 
 > Detecting fraudulent bank account applications under extreme class imbalance — with explainable predictions, cost-based decision thresholds, and a fairness audit across protected groups.
 
-![Python](https://img.shields.io/badge/Python-3.12-1f2937?style=flat-square&logo=python&logoColor=4fd1c5)
+![Python](https://img.shields.io/badge/Python-3.9-1f2937?style=flat-square&logo=python&logoColor=4fd1c5)
 ![XGBoost](https://img.shields.io/badge/XGBoost-2.1-1f2937?style=flat-square)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5-1f2937?style=flat-square&logo=scikitlearn&logoColor=f7931e)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-1.6-1f2937?style=flat-square&logo=scikitlearn&logoColor=f7931e)
 ![SHAP](https://img.shields.io/badge/SHAP-explainability-1f2937?style=flat-square)
 ![Status](https://img.shields.io/badge/status-in%20progress-e9b949?style=flat-square)
 ![License](https://img.shields.io/badge/code-MIT-4fd1c5?style=flat-square)
@@ -25,21 +25,40 @@ This is an **end-to-end modelling project** demonstrating honest handling of imb
 2. Where should the decision threshold sit to balance fraud loss against the cost of rejecting genuine customers?
 3. Does the model's error rate differ across protected groups (age, employment, income), and can that gap be measured and reduced?
 
+## Project status
+
+| Stage | Notebook | Status |
+|-------|----------|--------|
+| Exploratory Data Analysis | `01_eda.ipynb` | ✅ Complete |
+| Preprocessing | `02_preprocessing.ipynb` | 🔄 In progress |
+| Modelling | `03_modelling.ipynb` | ⏳ Planned |
+| Evaluation & threshold tuning | — | ⏳ Planned |
+| SHAP explainability | — | ⏳ Planned |
+| Fairness audit | — | ⏳ Planned |
+| Serving (FastAPI + Streamlit) | `app/` | ⏳ Planned |
+
 ## Dataset
 
 **Bank Account Fraud (BAF) Suite — NeurIPS 2022**, published by Feedzai. [Kaggle link](https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022)
 
-- **Base variant:** ~1,000,000 applications, fraud prevalence ~1.1%
+- **Base variant:** 1,000,000 applications, 32 columns, fraud prevalence 1.10%
 - **Six variants** (Base, Variant I–V) with controlled bias for fairness research
-- **Protected attributes:** age group, employment status, % income
+- **Protected attributes:** customer age, employment status, income
 - **Privacy-preserving synthetic data** — generated from a real bank's account-opening fraud data using differential privacy, feature encoding, and a CTGAN generative model. This project uses the synthetic release, not raw records.
 - **Licence:** CC BY-NC-ND 4.0 (academic / non-commercial). Data files are **not committed to this repository** — download from Kaggle into `data/`.
+
+## Key findings from EDA (Notebook 1)
+
+- **Severe class imbalance** — 11,029 fraudulent applications (1.10%) against 988,971 legitimate ones, a ~90:1 ratio. Accuracy is discarded as a metric; evaluation uses PR-AUC, ROC-AUC, precision and recall.
+- **Hidden missing values** — standard null checks reported zero missingness, but BAF encodes missing values as `-1`. Two columns are heavily affected: `prev_address_months_count` (71.3%) and `bank_months_count` (25.4%); four others are minor (<0.5%). Missingness is treated as a potential fraud signal, not just noise.
+- **Feature groups** — 27 numeric and 5 categorical features (`payment_type`, `employment_status`, `housing_status`, `source`, `device_os`); no duplicate rows.
+- **Protected attributes** — `customer_age` (pre-binned in decades), `employment_status` (codes CA–CG, dominated by CA at ~73%), and `income` (0–1 normalised) are reserved for the fairness audit.
 
 ## Tech stack
 
 | Layer | Tools |
 |-------|-------|
-| Language | Python 3.12 |
+| Language | Python 3.9 |
 | Data | pandas, NumPy |
 | Visualisation | Matplotlib, seaborn |
 | Modelling | scikit-learn (Logistic Regression baseline), XGBoost |
@@ -52,8 +71,8 @@ This is an **end-to-end modelling project** demonstrating honest handling of imb
 
 ## Methodology
 
-1. **EDA** — quantify imbalance, profile features, locate `-1`-encoded missing values
-2. **Preprocessing** — train/test split *before* any resampling to prevent leakage
+1. **EDA** — quantify imbalance, profile features, locate `-1`-encoded missing values *(done)*
+2. **Preprocessing** — is-missing flags before imputing; encode categoricals; train/test split *before* any resampling to prevent leakage
 3. **Imbalance handling** — compare SMOTE against class weighting
 4. **Modelling** — Logistic Regression baseline, then XGBoost
 5. **Evaluation** — precision/recall, PR-AUC, ROC-AUC, confusion matrix
@@ -76,3 +95,36 @@ This is an **end-to-end modelling project** demonstrating honest handling of imb
 This is a **modelling** project on a static, publicly released dataset. It does **not** claim production deployment. A production fraud system at a bank would additionally require real-time low-latency scoring, streaming ingestion, model-drift monitoring, scheduled retraining, a feature store, model-governance sign-off, and handling of adversarial adaptation as fraudsters change behaviour. Stating this explicitly is intentional: the work here is a genuine but partial slice of the full fraud-detection lifecycle.
 
 ## Repository structure
+
+Fraud-Detection-BAF/
+├── data/ # BAF CSVs from Kaggle (gitignored, not committed)
+├── notebooks/
+│ ├── 01_eda.ipynb # Exploratory data analysis
+│ └── 02_preprocessing.ipynb # Data preprocessing (in progress)
+├── src/ # reusable preprocessing / modelling functions
+├── app/ # FastAPI endpoint + Streamlit demo (planned)
+├── requirements.txt
+├── .gitignore
+└── README.md
+
+
+## Setup
+
+```bash
+git clone https://github.com/jadliudit/Fraud-Detection-BAF.git
+cd Fraud-Detection-BAF
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+# download the BAF CSVs from Kaggle into data/
+jupyter notebook notebooks/01_eda.ipynb
+```
+
+## Author
+
+**Udit Jadli** — Data Analyst | Brisbane, QLD, Australia
+
+[LinkedIn](https://www.linkedin.com/in/jadliudit97) · [GitHub](https://github.com/jadliudit) · [Kaggle](https://www.kaggle.com/uditjadli)
+
+## Licence
+
+Project code released under the MIT Licence. The BAF dataset is © Feedzai, licensed CC BY-NC-ND 4.0, and is not redistributed here.
