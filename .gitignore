@@ -1,0 +1,9 @@
+# Dataset is CC BY-NC-ND 4.0 - do not redistribute
+data/
+*.csv
+
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+*.pkl
